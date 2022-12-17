@@ -147,7 +147,7 @@ class SHT30:
     def measure_int(self, raw=False):
         """
         Get the temperature (T) and humidity (RH) measurement using integers.
-        If raw==True returns a bytearrya(6) with sensor direct measurement otherwise
+        If raw==True returns a bytearray(6) with sensor direct measurement otherwise
         It returns a tuple with 4 values: T integer, T decimal, H integer, H decimal
         For instance to return T=24.0512 and RH= 34.662 This method will return
         (24, 5, 34, 66) Only 2 decimal digits are returned, .05 becomes 5
