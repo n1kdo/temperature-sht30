@@ -1,7 +1,3 @@
-#
-# sht30 "driver" for micropython
-#
-
 from machine import I2C, Pin
 import time
 
