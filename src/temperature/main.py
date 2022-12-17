@@ -650,8 +650,8 @@ async def serve_http_client(reader, writer):
                 bytes_sent = send_simple_response(writer, http_status, CT_TEXT_TEXT, response)
             elif target == '/api/status':
                 payload = {'timestamp': get_timestamp(),
-                           'last_temperature': last_temperature,
-                           'last_humidity': last_humidity,
+                           'last_temperature': f'{last_temperature:3.1f}',
+                           'last_humidity': f'{last_humidity:3.1f}',
                            }
                 response = json.dumps(payload).encode('utf-8')
                 http_status = 200

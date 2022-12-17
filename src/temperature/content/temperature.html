@@ -135,38 +135,27 @@
 
     function process_get_status_response(message) {
         let status_data = JSON.parse(message);
-        let new_laser_state = status_data.laser_state;
         timestamp = status_data.timestamp;
         last_temperature = status_data.last_temperature;
         last_humidity = status_data.last_humidity;
-
-        update_timeout = setTimeout(get_status, 1000);
 
         document.getElementById("current_temperature").innerHTML = last_temperature;
         document.getElementById("current_humidity").innerHTML = last_humidity;
         document.getElementById("timestamp").innerHTML = timestamp;
 
+        document.getElementById('refresh_radio_0').checked = (update_secs === 0);
+        document.getElementById('refresh_radio_1').checked = (update_secs === 1);
+        document.getElementById('refresh_radio_5').checked = (update_secs === 5);
+        document.getElementById('refresh_radio_60').checked = (update_secs === 60);
+
         if (update_timeout !== 0) {
             clearTimeout(update_timeout)
             update_timeout = 0;
         }
-        let set_update_secs;
 
-        // automatic refresh logic
-        if (free_updates > 0) {
-            free_updates--;
-            update_timeout = setTimeout(get_status, 1000);
-            set_update_secs = 1
-        } else {
-            set_update_secs = update_secs;
-            if (update_secs > 0) {
-                update_timeout = setTimeout(get_status, update_secs * 1000);
-            }
+        if (update_secs > 0) {
+            update_timeout = setTimeout(get_status, update_secs * 1000);
         }
-
-        document.getElementById('refresh_radio_0').checked = (set_update_secs === 0);
-        document.getElementById('refresh_radio_1').checked = (set_update_secs === 1);
-        document.getElementById('refresh_radio_5').checked = (set_update_secs === 5);
     }
 
     function get_status() {
