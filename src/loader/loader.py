@@ -18,7 +18,6 @@ FILES_LIST = [
     'content/files.html',
     'content/temperature.html',
     'content/setup.html',
-    'data/config.json',
 ]
 
 
