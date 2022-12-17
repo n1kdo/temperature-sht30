@@ -8,7 +8,7 @@ and humidity values.
 
 ## hardware
 
-This uses a Raspberry Pi Pico W and a SHT30 sensor (from Amazon?)
+This uses a Raspberry Pi Pico W and a SHT30 sensor (from Amazon).
 
 The sensor is wired to the Pico W as follows:
 

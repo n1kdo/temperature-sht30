@@ -81,8 +81,7 @@ else:
 
 
 if upython:
-    onboard = machine.Pin('LED', machine.Pin.OUT, value=0)
-    onboard.on()
+    onboard = machine.Pin('LED', machine.Pin.OUT, value=1)  # turn on right away
     blinky = machine.Pin(2, machine.Pin.OUT, value=0)  # status LED
     button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_UP)
 
@@ -688,8 +687,10 @@ async def morse_sender():
                 if t > 0:
                     # blink time is in milliseconds!, but data is in 10 msec
                     blinky.on()
+                    onboard.on()
                     await asyncio.sleep(t/100)
                     blinky.off()
+                    onboard.off()
                 await asyncio.sleep(MORSE_ESP / 100 if len(blink_list) > 0 else MORSE_LSP / 100)
 
 
@@ -699,9 +700,10 @@ async def sht30_reader(verbosity=4):
 
     while True:
         tc, h = sht.measure()
-        tf = tc * 1.8 + 32.0
-        print(tf, h)
-        last_temperature = round(tf,1)
+        tf = tc * 1.8 + 32.0  # make Fahrenheit for Americans
+        if verbosity > 4:
+            print(tf, h)
+        last_temperature = round(tf, 1)
         last_humidity = round(h, 1)
         await asyncio.sleep(15.0)
 
