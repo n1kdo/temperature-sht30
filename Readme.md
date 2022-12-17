@@ -13,6 +13,7 @@ This uses a Raspberry Pi Pico W and a SHT30 sensor (from Amazon?)
 The sensor is wired to the Pico W as follows:
 
 | wire color | purpose | pin # | pin label |
+|------------|---------|-------|-----------|
 | Red        | +v      | 36    | 3v3 out   |
 | White      | SDA     | 6     | GP4       |
 | Yellow     | SCL     | 7     | GP5       |
