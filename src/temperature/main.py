@@ -199,7 +199,7 @@ def read_config():
 
 def save_config(config):
     with open(CONFIG_FILE, 'w') as config_file:
-        json.dump(config, config_file, indent=2)
+        json.dump(config, config_file)
 
 
 def safe_int(s, default=-1):
