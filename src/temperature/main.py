@@ -199,7 +199,7 @@ def read_config():
 
 def save_config(config):
     with open(CONFIG_FILE, 'w') as config_file:
-        json.dump(config, config_file)
+        json.dump(config, config_file, indent=2)
 
 
 def safe_int(s, default=-1):
@@ -290,7 +290,7 @@ def connect_to_network(config):
     secret = config.get('secret') or ''
     if len(secret) > 64:
         secret = ''
-    access_point_mode = config.get('ap_mode', False)
+    access_point_mode = config.get('ap_mode') or False
 
     if access_point_mode:
         print('Starting setup WLAN...')
@@ -335,7 +335,7 @@ def connect_to_network(config):
             except ValueError as exc:
                 print(f'hostname is still not supported on Pico W')
 
-        is_dhcp = (config.get('dhcp') or 'True') == 'True'
+        is_dhcp = config.get('dhcp') or True
         if not is_dhcp:
             ip_address = config.get('ip_address')
             netmask = config.get('netmask')
@@ -508,19 +508,68 @@ async def serve_http_client(reader, writer):
                     http_status = 200
                     bytes_sent = send_simple_response(writer, http_status, CT_APP_JSON, response)
                 elif verb == 'POST':
-                    tcp_port = args.get('tcp_port') or '-1'
-                    web_port = args.get('web_port') or '-1'
-                    tcp_port_int = safe_int(tcp_port, -2)
-                    web_port_int = safe_int(web_port, -2)
-                    ssid = args.get('SSID') or ''
-                    secret = args.get('secret') or ''
-                    ap_mode = True if args.get('ap_mode', '0') == '1' else False
-                    if 0 <= web_port_int <= 65535 and 0 <= tcp_port_int <= 65535 and 0 < len(ssid) <= 64 and len(
-                            secret) < 64 and len(args) == 4:
-                        config = {'SSID': ssid, 'secret': secret, 'tcp_port': tcp_port, 'web_port': web_port,
-                                  'ap_mode': ap_mode}
-                        # config = json.dumps(args)
-                        save_config(config)
+                    config = read_config()
+                    dirty = False
+                    errors = False
+                    tcp_port = args.get('tcp_port')
+                    if tcp_port is not None:
+                        tcp_port_int = safe_int(tcp_port, -2)
+                        if 0 <= tcp_port_int <= 65535:
+                            config['tcp_port'] = tcp_port
+                            dirty = True
+                        else:
+                            errors = True
+                    web_port = args.get('web_port')
+                    if web_port is not None:
+                        web_port_int = safe_int(web_port, -2)
+                        if 0 <= web_port_int <= 65535:
+                            config['web_port'] = web_port
+                            dirty = True
+                        else:
+                            errors = True
+                    ssid = args.get('SSID')
+                    if ssid is not None:
+                        if 0 < len(ssid) < 64:
+                            config['SSID'] = ssid
+                            dirty = True
+                        else:
+                            errors = True
+                    secret = args.get('secret')
+                    if secret is not None:
+                        if 8 <= len(secret) < 32:
+                            config['secret'] = secret
+                            dirty = True
+                        else:
+                            errors = True
+                    ap_mode_arg = args.get('ap_mode')
+                    if ap_mode_arg is not None:
+                        ap_mode = True if ap_mode_arg == '1' else False
+                        config['ap_mode'] = ap_mode
+                        dirty = True
+                    dhcp_arg = args.get('dhcp')
+                    if dhcp_arg is not None:
+                        dhcp = True if dhcp_arg == 1 else False
+                        config['dhcp'] = dhcp
+                        dirty = True
+                    ip_address = args.get('ip_address')
+                    if ip_address is not None:
+                        config['ip_address'] = ip_address
+                        dirty = True
+                    netmask = args.get('netmask')
+                    if netmask is not None:
+                        config['netmask'] = netmask
+                        dirty = True
+                    gateway = args.get('gateway')
+                    if gateway is not None:
+                        config['gateway'] = gateway
+                        dirty = True
+                    dns_server = args.get('dns_server')
+                    if dns_server is not None:
+                        config['dns_server'] = dns_server
+                        dirty = True
+                    if not errors:
+                        if dirty:
+                            save_config(config)
                         response = b'ok\r\n'
                         http_status = 200
                         bytes_sent = send_simple_response(writer, http_status, CT_TEXT_TEXT, response)

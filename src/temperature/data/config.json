@@ -1,1 +1,12 @@
-{"SSID": "REDACTED", "secret": "REDACTED", "tcp_port": "73", "web_port": "80"}
+{
+  "SSID": "FBI Surveillance Van",
+  "secret": "REDACTED",
+  "tcp_port": "73",
+  "web_port": "80",
+  "ap_mode": false,
+  "dhcp": true,
+  "ip_address": "192.168.1.9",
+  "netmask": "255.255.255.0",
+  "gateway": "192.688.1.1",
+  "dns_server": "8.8.8.8"
+}
