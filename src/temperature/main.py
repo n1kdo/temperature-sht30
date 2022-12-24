@@ -281,14 +281,29 @@ def send_simple_response(writer, http_status=200, content_type=None, response=No
     return content_length
 
 
-def connect_to_network(ssid, secret, access_point_mode=False):
+def connect_to_network(config):
     global morse_message
+
+    ssid = config.get('SSID') or ''
+    if len(ssid) == 0 or len(ssid) > 64:
+        ssid = DEFAULT_SSID
+    secret = config.get('secret') or ''
+    if len(secret) > 64:
+        secret = ''
+    access_point_mode = config.get('ap_mode', False)
 
     if access_point_mode:
         print('Starting setup WLAN...')
         wlan = network.WLAN(network.AP_IF)
         wlan.active(False)
         wlan.config(pm=0xa11140)  # disable power save, this is a server.
+
+        hostname = config.get('hostname')
+        if hostname is not None:
+            try:
+                wlan.config(hostname=hostname)
+            except ValueError as exc:
+                print(f'hostname is still not supported on Pico W')
 
         # wlan.ifconfig(('10.0.0.1', '255.255.255.0', '0.0.0.0', '0.0.0.0'))
 
@@ -312,7 +327,30 @@ def connect_to_network(ssid, secret, access_point_mode=False):
         print('Connecting to WLAN...')
         wlan = network.WLAN(network.STA_IF)
         wlan.config(pm=0xa11140)  # disable power save, this is a server.
-        # wlan.config(hostname='not supported on pico-w')
+
+        hostname = config.get('hostname')
+        if hostname is not None:
+            try:
+                wlan.config(hostname=hostname)
+            except ValueError as exc:
+                print(f'hostname is still not supported on Pico W')
+
+        is_dhcp = (config.get('dhcp') or 'True') == 'True'
+        if not is_dhcp:
+            ip_address = config.get('ip_address')
+            netmask = config.get('netmask')
+            gateway = config.get('gateway')
+            dns_server = config.get('dns_server')
+            if ip_address is not None and netmask is not None and gateway is not None and dns_server is not None:
+                print('setting up static IP')
+                wlan.ifconfig((ip_address, netmask, gateway, dns_server))
+            else:
+                print('cannot use static IP, data is missing, configuring network with DHCP')
+                wlan.ifconfig('dhcp')
+        else:
+            print('configuring network with DHCP')
+            wlan.ifconfig('dhcp')
+
         wlan.active(True)
         wlan.connect(ssid, secret)
         max_wait = 10
@@ -349,41 +387,37 @@ def unpack_args(s):
 
 async def serve_serial_client(reader, writer):
     """
-    this provides serial compatible control.
-    use com0com with com2tcp to interface legacy apps on Windows.
-
-    this code provides a serial endpoint that implements part of the DCU-3 protocol.
-
-    all commands start with 'A'
-    all commands end with ';' or CR (ascii 13)
+    send the data over a dumb connection
     """
     t0 = milliseconds()
     partner = writer.get_extra_info('peername')[0]
-    print('\nserial client connected from {}'.format(partner))
+    print('\nclient connected from {}'.format(partner))
     buffer = []
+    client_connected = True
 
     try:
-        while True:
+        while client_connected:
             data = await reader.read(1)
             if data is None:
                 break
             else:
                 if len(data) == 1:
                     b = data[0]
-                    if b == 0x02:
-                        buffer = [b]
-                    else:
-                        if len(buffer) < 8:  # anti-gibberish test
-                            buffer.append(b)
-                            # do something here.
+                    if b == 10:  # line feed, get temperature
+                        message = f'{get_timestamp()} {last_temperature} {last_humidity}\r\n'.encode()
+                        writer.write(message)
+                    elif b == 81 or b == 113:  # q/Q exit
+                        client_connected = False
+                    await writer.drain()
 
+        reader.close()
         writer.close()
         await writer.wait_closed()
 
     except Exception as ex:
         print('exception in serve_serial_client:', type(ex), ex)
     tc = milliseconds()
-    print('serial client disconnected, elapsed time {:6.3f} seconds'.format((tc - t0) / 1000.0))
+    print('client disconnected, elapsed time {:6.3f} seconds'.format((tc - t0) / 1000.0))
 
 
 async def serve_http_client(reader, writer):
@@ -696,7 +730,7 @@ async def morse_sender():
 
 async def sht30_reader(verbosity=4):
     global last_temperature, last_humidity
-    sht = SHT30()
+    sht = SHT30(i2c_id=1, scl_pin=27, sda_pin=26)
 
     while True:
         tc, h = sht.measure()
@@ -717,18 +751,11 @@ async def main():
     web_port = safe_int(config.get('web_port') or DEFAULT_WEB_PORT, DEFAULT_WEB_PORT)
     if web_port < 0 or web_port > 65535:
         web_port = DEFAULT_WEB_PORT
-    ssid = config.get('SSID') or ''
-    if len(ssid) == 0 or len(ssid) > 64:
-        ssid = DEFAULT_SSID
-    secret = config.get('secret') or ''
-    if len(secret) > 64:
-        secret = ''
-    ap_mode = config.get('ap_mode', False)
 
     connected = True
     if upython:
         try:
-            ip_address = connect_to_network(ssid=ssid, secret=secret, access_point_mode=ap_mode)
+            ip_address = connect_to_network(config)
             connected = ip_address is not None
         except Exception as ex:
             connected = False
