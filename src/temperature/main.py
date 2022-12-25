@@ -349,7 +349,7 @@ def connect_to_network(config):
                 wlan.ifconfig('dhcp')
         else:
             print('configuring network with DHCP')
-            wlan.ifconfig('dhcp')
+            # wlan.ifconfig('dhcp')  #  this does not work.  network does not come up.  no errors, either.
 
         wlan.active(True)
         wlan.connect(ssid, secret)
