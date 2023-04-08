@@ -42,6 +42,11 @@ on a small board midway in the wiring between the Pico W and the SHT30.
 7. press 'apply' and then 'restart'.
 8. the device should connect to your network.
 
+### software
+
+This uses some of the same software I wrote for my
+[Ham-IV Rotator Controller-Controller](https://github.com/n1kdo/rotator-controller-controller).
+
 n1kdo 20221217
 
 
