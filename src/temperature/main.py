@@ -284,6 +284,9 @@ def send_simple_response(writer, http_status=200, content_type=None, response=No
 def connect_to_network(config):
     global morse_message
 
+    config['hostname'] = 'sht30'
+    network.country('US')
+
     ssid = config.get('SSID') or ''
     if len(ssid) == 0 or len(ssid) > 64:
         ssid = DEFAULT_SSID
@@ -331,7 +334,7 @@ def connect_to_network(config):
         hostname = config.get('hostname')
         if hostname is not None:
             try:
-                wlan.config(hostname=hostname)
+                network.hostname(hostname)
             except ValueError as exc:
                 print(f'hostname is still not supported on Pico W')
 
