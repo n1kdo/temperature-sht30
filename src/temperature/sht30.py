@@ -41,7 +41,8 @@ class SHT30:
     def __init__(self, i2c_id=0, scl_pin=5, sda_pin=4, delta_temp=0, delta_hum=0, i2c_address=DEFAULT_I2C_ADDRESS):
         self.i2c = I2C(i2c_id, scl=Pin(scl_pin), sda=Pin(sda_pin))
         self.i2c_addr = i2c_address
-        self.set_delta(delta_temp, delta_hum)
+        self.delta_temp = delta_temp
+        self.delta_hum = delta_hum
         time.sleep_ms(50)
 
     def init(self, scl_pin=5, sda_pin=4):
@@ -66,7 +67,8 @@ class SHT30:
         self.delta_temp = delta_temp
         self.delta_hum = delta_hum
 
-    def _check_crc(self, data):
+    @staticmethod
+    def _check_crc(data):
         # calculates 8-Bit checksum with given polynomial
         crc = 0xFF
 
@@ -87,7 +89,7 @@ class SHT30:
         """
         try:
             self.i2c.writeto(self.i2c_addr, cmd_request)
-            if not response_size:
+            if response_size == 0:
                 return None
             time.sleep_ms(read_delay_ms)
             data = self.i2c.readfrom(self.i2c_addr, response_size)
@@ -107,18 +109,18 @@ class SHT30:
         """
         Clear the status register
         """
-        return self.send_cmd(SHT30.CLEAR_STATUS_CMD, None)
+        return self.send_cmd(SHT30.CLEAR_STATUS_CMD, 0)
 
     def reset(self):
         """
         Send a soft-reset to the sensor
         """
-        return self.send_cmd(SHT30.RESET_CMD, None)
+        return self.send_cmd(SHT30.RESET_CMD, 0)
 
     def status(self, raw=False):
         """
         Get the sensor status register.
-        It returns a int value or the bytearray(3) if raw==True
+        It returns an int value or the bytearray(3) if raw==True
         """
         data = self.send_cmd(SHT30.STATUS_CMD, 3, read_delay_ms=20)
 
@@ -180,10 +182,11 @@ class SHT30Error(Exception):
 
     def get_message(self):
         if self.error_code == SHT30Error.BUS_ERROR:
-            return 'Bus error'
+            message = 'Bus error'
         elif self.error_code == SHT30Error.DATA_ERROR:
-            return 'Data error'
+            message = 'Data error'
         elif self.error_code == SHT30Error.CRC_ERROR:
-            return 'CRC error'
+            message = 'CRC error'
         else:
-            return 'Unknown error'
+            message = 'unknown'
+        return message

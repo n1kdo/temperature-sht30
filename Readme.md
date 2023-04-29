@@ -33,7 +33,7 @@ on a small board midway in the wiring between the Pico W and the SHT30.
 ### setup
 
 1. press the AP mode button and the device will restart in access point mode. 
-2. connect to the 'sht30' wifi network using password 'temperature'.  
+2. connect to the 'sht30' WiFi network using password 'temperature'.  
 3. your phone or tablet may resist staying connected to this network as the internet is unreachable through it. 
    this needs to be dealt with on that device.
 4. navigate to http://192.168.4.1 which should show the temperature page.

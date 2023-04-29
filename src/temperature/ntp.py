@@ -40,10 +40,14 @@ def get_ntp_time(host='pool.ntp.org'):
     return tt
 
 
-if __name__ == '__main__':
+def main():
     ntp_time = get_ntp_time()
     print('ntptime: ', ntp_time)
     tt = time.gmtime()
     print('gmtime:  ', tt)
     dt = f'{tt[0]:04d}-{tt[1]:02d}-{tt[2]:02d}T{tt[3]:02d}:{tt[4]:02d}:{tt[5]:02d}+00:00'
     print(dt)
+
+
+if __name__ == '__main__':
+    main()

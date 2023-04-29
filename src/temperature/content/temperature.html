@@ -52,22 +52,10 @@
     input[type=number]::-webkit-outer-spin-button {
         opacity: 1;
     }
-    #laser_button {
-        border-radius: 4px;
-        font-size: 18px;
-    }
-    #laser_button:hover {
-        border-color: yellow;
-    }
     .left_column {
         float: left;
         text-align: center;
         width: 250px;
-    }
-    #messages_textarea {
-        font-family: monospace;
-        height: 160px;
-        width: 220px;
     }
     .right_column {
         float: left;
@@ -88,15 +76,6 @@
     .refresh_radio_label {
         font-weight: bold;
         text-align: center;
-    }
-    .mode_button {
-        background: transparent;
-        border: none;
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-    }
-    .mode_button:hover {
     }
     .setup {
         font-size: 8pt;
@@ -124,7 +103,6 @@
     let last_humidity = 0;
     let timestamp = "";
 
-    let free_updates = 0;
     let update_secs = 0;
     let update_timeout = 0;
 

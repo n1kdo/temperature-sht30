@@ -37,11 +37,11 @@ def get_ports_list():
     return sorted(ports_list, key=lambda k: int(k[3:]))
 
 
-def put_file_progress_callback(sentSoFar, totalSize):
+def put_file_progress_callback(bytes_so_far, bytes_total):
     """
     just print a dot
-    :param sentSoFar:
-    :param totalSize:
+    :param bytes_so_far:
+    :param bytes_total:
     :return: None
     """
     print('.', end='')

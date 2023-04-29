@@ -89,6 +89,7 @@ class PyboardError(Exception):
     pass
 
 
+# noinspection PyPep8Naming
 class TelnetToSerial:
     def __init__(self, ip, user, password, read_timeout=None):
         self.tn = None
@@ -154,6 +155,7 @@ class TelnetToSerial:
             return n_waiting
 
 
+# noinspection PyPep8Naming
 class ProcessToSerial:
     "Execute a process and emulate serial connection using its stdin/stdout."
 
@@ -206,6 +208,7 @@ class ProcessToSerial:
         return 0
 
 
+# noinspection PyPep8Naming
 class ProcessPtyToTerminal:
     """Execute a process which creates a PTY and prints slave PTY as
     first line of its output, and emulate serial connection using

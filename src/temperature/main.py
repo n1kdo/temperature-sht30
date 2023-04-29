@@ -64,7 +64,8 @@ else:
 
             def __init__(self, name, options=0, value=0):
                 self.value = value
-                pass
+                self.name = name
+                self.options = options
 
             def on(self):
                 self.value = 1
@@ -177,14 +178,12 @@ port = None
 def get_timestamp(tt=None):
     if tt is None:
         tt = time.gmtime()
-    # return '{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}Z'.format(tt[0], tt[1], tt[2], tt[3], tt[4], tt[5])
     return f'{tt[0]:04d}-{tt[1]:02d}-{tt[2]:02d} {tt[3]:02d}:{tt[4]:02d}:{tt[5]:02d}Z'
 
 
 def get_iso_8601_timestamp(tt=None):
     if tt is None:
         tt = time.gmtime()
-    #return '{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}+00:00'.format(tt[0], tt[1], tt[2], tt[3], tt[4], tt[5])
     return f'{tt[0]:04d}-{tt[1]:02d}-{tt[2]:02d}T{tt[3]:02d}:{tt[4]:02d}:{tt[5]:02d}+00:00'
 
 
@@ -843,6 +842,7 @@ async def main():
             await asyncio.sleep(0.25)
             pressed = button.value() == 0
             if not last_pressed and pressed:  # look for activating edge
+                ap_mode = config.get('ap_mode') or False
                 ap_mode = not ap_mode
                 config['ap_mode'] = ap_mode
                 save_config(config)
