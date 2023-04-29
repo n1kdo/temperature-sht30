@@ -8,6 +8,7 @@ __copyright__ = 'Copyright 2022, J. B. Otterson N1KDO.'
 import os
 import pyboard
 import serial
+import sys
 from serial.tools.list_ports import comports
 BAUD_RATE = 115200
 
@@ -112,7 +113,7 @@ def main():
 
     if picow_port is None:
         print('Could not identify Pico-W communications port.  Exiting.')
-        exit(1)
+        sys.exit(1)
 
     print(f'\nAttempting to load device on port {picow_port}.')
     load_device(picow_port)

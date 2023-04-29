@@ -56,9 +56,7 @@ else:
         @staticmethod
         def soft_reset():
             print('Machine.soft_reset()')
-    machine = Machine()
 
-"""
         class Pin(object):
             OUT = 1
             IN = 0
@@ -77,7 +75,8 @@ else:
 
             def value(self):
                 return self.value
-"""
+
+    machine = Machine()
 
 
 if upython:

@@ -1,5 +1,5 @@
-from machine import I2C, Pin
 import time
+from machine import I2C, Pin
 
 __version__ = '0.2.3'
 __author__ = 'Roberto Sánchez'
@@ -82,13 +82,13 @@ class SHT30:
 
     def send_cmd(self, cmd_request, response_size=6, read_delay_ms=100):
         """
-        Send a command to the sensor and read (optionally) the response
-        The responsed data is validated by CRC
+        Send a command to the sensor and read (optionally) a response.
+        The response data is validated by CRC.
         """
         try:
             self.i2c.writeto(self.i2c_addr, cmd_request)
             if not response_size:
-                return
+                return None
             time.sleep_ms(read_delay_ms)
             data = self.i2c.readfrom(self.i2c_addr, response_size)
             for i in range(response_size//3):
