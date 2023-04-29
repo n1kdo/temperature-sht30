@@ -1,4 +1,7 @@
 #!/bin/env python3
+"""
+Script loads code & other assets onto Raspberry Pi Pico W
+"""
 __author__ = 'J. B. Otterson'
 __copyright__ = 'Copyright 2022, J. B. Otterson N1KDO.'
 
@@ -22,6 +25,10 @@ FILES_LIST = [
 
 
 def get_ports_list():
+    """
+    discover serial ports
+    :return: a list of serial port names
+    """
     ports = comports()
     ports_list = []
     for port in ports:
@@ -29,11 +36,23 @@ def get_ports_list():
     return sorted(ports_list, key=lambda k: int(k[3:]))
 
 
-def put_file_progress_callback(a, b):
+def put_file_progress_callback(sentSoFar, totalSize):
+    """
+    just print a dot
+    :param sentSoFar:
+    :param totalSize:
+    :return: None
+    """
     print('.', end='')
 
 
 def put_file(filename, target):
+    """
+    send a file to a micropython device
+    :param filename: the file to send
+    :param target: the device to send the file to
+    :return: None
+    """
     src_file_name = SRC_DIR + filename
     if filename[-1:] == '/':
         filename = filename[:-1]
@@ -47,11 +66,11 @@ def put_file(filename, target):
     else:
         try:
             os.stat(src_file_name)
-            print('sending file {} '.format(filename), end='')
+            print(f'sending file {filename} ', end='')
             target.fs_put(src_file_name, filename, progress_callback=put_file_progress_callback)
             print()
         except OSError as e:
-            print('cannot find source file {}'.format(src_file_name))
+            print(f'cannot find source file {src_file_name}')
 
 
 def load_device(port):
@@ -79,11 +98,11 @@ def main():
     print('Disconnect the Pico-W if it is connected.')
     input('(press enter to continue...)')
     ports_1 = get_ports_list()
-    print('Detected serial ports: ' + ' '.join(ports_1))
+    print(f'Detected serial ports: {" ".join(ports_1)}')
     print('\nConnect the Pico-W to USB port.')
     input('(press enter to continue...)')
     ports_2 = get_ports_list()
-    print('Detected serial ports: ' + ' '.join(ports_2))
+    print(f'Detected serial ports: {" ".join(ports_2)}')
 
     picow_port = None
     for port in ports_2:
@@ -95,7 +114,7 @@ def main():
         print('Could not identify Pico-W communications port.  Exiting.')
         exit(1)
 
-    print('\nAttempting to load device on port {}'.format(picow_port))
+    print(f'\nAttempting to load device on port {picow_port}.')
     load_device(picow_port)
 
 

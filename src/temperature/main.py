@@ -139,8 +139,8 @@ MORSE_ESP = MORSE_DIT  # inter-element space
 MORSE_DAH = 3 * MORSE_PERIOD
 MORSE_LSP = 5 * MORSE_PERIOD  # more space between letters
 MORSE_PATTERNS = {  # sparse to save space
-    ' ': (0, 0, 0, 0, 0),  # 5 element spaces then a letter space = 10 element pause  # space is 0x20 ascii
-    '0': (MORSE_DAH, MORSE_DAH, MORSE_DAH, MORSE_DAH, MORSE_DAH),  # 0 is 0x30 ascii
+    ' ': (0, 0, 0, 0, 0),  # 5 element spaces then a letter space = 10 element pause
+    '0': (MORSE_DAH, MORSE_DAH, MORSE_DAH, MORSE_DAH, MORSE_DAH),
     '1': (MORSE_DIT, MORSE_DAH, MORSE_DAH, MORSE_DAH, MORSE_DAH),
     '2': (MORSE_DIT, MORSE_DIT, MORSE_DAH, MORSE_DAH, MORSE_DAH),
     '3': (MORSE_DIT, MORSE_DIT, MORSE_DIT, MORSE_DAH, MORSE_DAH),
@@ -178,13 +178,15 @@ port = None
 def get_timestamp(tt=None):
     if tt is None:
         tt = time.gmtime()
-    return '{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}Z'.format(tt[0], tt[1], tt[2], tt[3], tt[4], tt[5])
+    # return '{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}Z'.format(tt[0], tt[1], tt[2], tt[3], tt[4], tt[5])
+    return f'{tt[0]:04d}-{tt[1]:02d}-{tt[2]:02d} {tt[3]:02d}:{tt[4]:02d}:{tt[5]:02d}Z'
 
 
 def get_iso_8601_timestamp(tt=None):
     if tt is None:
         tt = time.gmtime()
-    return '{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}+00:00'.format(tt[0], tt[1], tt[2], tt[3], tt[4], tt[5])
+    #return '{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}+00:00'.format(tt[0], tt[1], tt[2], tt[3], tt[4], tt[5])
+    return f'{tt[0]:04d}-{tt[1]:02d}-{tt[2]:02d}T{tt[3]:02d}:{tt[4]:02d}:{tt[5]:02d}+00:00'
 
 
 def read_config():
